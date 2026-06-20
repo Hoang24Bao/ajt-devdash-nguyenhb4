@@ -21,3 +21,8 @@ export async function getProducts(): Promise<APIProductsResponse> {
 export async function getProductById(id: number): Promise<Product> {
   return fetchJson<Product>(`${BASE_URL}/products/${id}`);
 }
+
+// API get list of categories
+export async function getCategories(): Promise<string[]> {
+  return fetchJson<string[]>(`${BASE_URL}/products/category-list`);
+}

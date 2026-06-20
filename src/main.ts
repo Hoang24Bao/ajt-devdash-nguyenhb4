@@ -1,4 +1,4 @@
-import { getProducts, getProductById } from './api';
+import { getProducts, getProductById, getCategories } from './api';
 import { Product } from './types';
 
 // DOM Elements
@@ -66,13 +66,19 @@ function renderProducts(products: Product[]): void {
 async function loadDashboard(): Promise<void> {
   renderStatus('loading');
   try {
-    const response = await getProducts();
+    // Kích hoạt đồng thời 2 luồng gọi mạng chạy song song cùng lúc để tối ưu thời gian
+    const [response, _categoriesData] = await Promise.all([
+      getProducts(),
+      getCategories()
+    ]);
+    
     allProducts = response.products;
     
     renderStatus('clear');
     renderProducts(allProducts);
   } catch (err) {
-    const errorMessage = err instanceof Error ? err.message : 'An unknown network error occurred';
+    // Lưới an toàn bắt lỗi hệ thống và phản ánh lên UI
+    const errorMessage = err instanceof Error ? err.message : 'Đã có lỗi không xác định xảy ra';
     renderStatus('error', errorMessage);
   }
 }
