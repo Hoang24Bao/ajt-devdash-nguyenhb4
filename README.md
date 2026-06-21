@@ -46,5 +46,5 @@ npm install
 ```
 
 ## Live Demo
-* **Deployment URL:** 
-* **Source Code:** 
+* **Deployment URL:** `https://ajt-devdash-nguyenhb4.vercel.app/`
+* **Source Code:** `https://github.com/Hoang24Bao/ajt-devdash-nguyenhb4`
