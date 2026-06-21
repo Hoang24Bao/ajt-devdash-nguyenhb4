@@ -21,6 +21,10 @@ DevDash is a premium asynchronous product inspection panel designed with a high-
 - `Promise.all` to load two or more resources in parallel
 - Application state modelled with a **union/literal type** (idle/loading/success/error) 
 
+### Excellent tier
+- A **discriminated union** drives state and is exhaustively narrowed
+- Clean module architecture, reusable helpers, and a README with run instructions
+
 ---
 
 ### 📸 Application Screenshots
