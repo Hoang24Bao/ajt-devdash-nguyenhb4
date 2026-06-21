@@ -13,17 +13,31 @@ const detailContainer = document.getElementById('detail-container') as HTMLDivEl
 // Local state to store products for filtering
 let allProducts: Product[] = [];
 
+type AppState = 'idle' | 'loading' | 'success' | 'error';
+let currentAppState: AppState = 'idle';
+
 //Manage UI Status States (Loading, Error, Success)
-function renderStatus(state: 'loading' | 'clear' | 'error', message: string = ''): void {
+function renderStatus(state: AppState, message: string = ''): void {
+  currentAppState = state;
+  console.log('🔄 Application state changed to:', currentAppState);
   if (!statusContainer) return;
   
-  if (state === 'loading') {
-    statusContainer.innerHTML = `<div class="status-message loading">⏳ Loading products dashboard, please wait...</div>`;
-    if (productsContainer) productsContainer.innerHTML = '';
-  } else if (state === 'error') {
-    statusContainer.innerHTML = `<div class="status-message error">❌ Error: ${message}</div>`;
-  } else {
-    statusContainer.innerHTML = '';
+  switch (currentAppState) {
+    case 'idle':
+      statusContainer.innerHTML = `<div class="status-message text-muted">System is idle. Waiting to initialize...</div>`;
+      if (productsContainer) productsContainer.innerHTML = '';
+      break;
+    case 'loading':
+      statusContainer.innerHTML = `<div class="status-message loading">⏳ Loading products dashboard, please wait...</div>`;
+      if (productsContainer) productsContainer.innerHTML = '';
+      break;
+    case 'error':
+      statusContainer.innerHTML = `<div class="status-message error">❌ Error: ${message}</div>`;
+      if (productsContainer) productsContainer.innerHTML = '';
+      break;
+    case 'success':
+      statusContainer.innerHTML = '';
+      break;
   }
 }
 
@@ -62,11 +76,11 @@ function renderProducts(products: Product[]): void {
   });
 }
 
-//Async flow to load full dashboard list resource
+// Async flow to load full dashboard list resource
 async function loadDashboard(): Promise<void> {
   renderStatus('loading');
   try {
-    // Kích hoạt đồng thời 2 luồng gọi mạng chạy song song cùng lúc để tối ưu thời gian
+    // Trigger two network requests concurrently using Promise.all to optimize loading time
     const [response, _categoriesData] = await Promise.all([
       getProducts(),
       getCategories()
@@ -74,11 +88,11 @@ async function loadDashboard(): Promise<void> {
     
     allProducts = response.products;
     
-    renderStatus('clear');
+    renderStatus('success');
     renderProducts(allProducts);
   } catch (err) {
-    // Lưới an toàn bắt lỗi hệ thống và phản ánh lên UI
-    const errorMessage = err instanceof Error ? err.message : 'Đã có lỗi không xác định xảy ra';
+    // Fail-safe boundary to catch system exceptions and reflect them onto the UI
+    const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
     renderStatus('error', errorMessage);
   }
 }
